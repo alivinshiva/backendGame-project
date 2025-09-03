@@ -5,7 +5,7 @@
 // handler using promise
 const asyncHandler = (requestHandler) => {
     // Returns a function that handles req, res, next
-    (req, res, next) => {
+    return (req, res, next) => {
         // Executes the requestHandler and catches any errors
         Promise.resolve(requestHandler(req, res, next))
         .catch((err) => next(err)) // Passes errors to Express error middleware
