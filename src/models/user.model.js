@@ -1,3 +1,24 @@
+/*
+==================== NOTES ====================
+File: user.model.js
+
+Why use this file:
+- Defines the User schema and model for MongoDB using Mongoose.
+- Centralizes user data structure, validation, and authentication logic.
+- Handles password hashing and token generation for security.
+
+How it works:
+- Sets up a schema with fields for username, email, password, avatar, etc.
+- Uses Mongoose middleware to hash passwords before saving.
+- Adds methods for password comparison and JWT token generation.
+- Exports the User model for use in controllers and routes.
+
+What if we don't use this file:
+- User data would be scattered and inconsistent across the project.
+- Passwords might be stored insecurely without hashing.
+- Authentication and user management would be harder to maintain and extend.
+==============================================
+*/
 import mongoose, { Schema } from "mongoose";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
@@ -57,7 +78,7 @@ const userSchema = new Schema(
 userSchema.pre("save", async function (next) {
     // checking if password is modified or not, if not then we need not to run this code, we are keeping next outside of the if becasue it will run in all case.
     if (this.isModified("password")) {
-        this.password = bcrypt.hash(this.password, 10)
+        this.password = await bcrypt.hash(this.password, 10)
 // Hash the password before saving the user document
     }
     next()
