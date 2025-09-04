@@ -39,11 +39,11 @@ const registerUser = asyncHandler( async (req , res) => {
     8> return response to frontend.
     */
 
-    const {fullname, email, password, username  } = req.body
+    const {fullName, email, password, username  } = req.body
     console.log(`email: ${email}`);
     console.log(`password: ${password}`);
 
-        if(fullname === "") {
+        if(fullName === "") {
             throw new ApiError(400, "full name is required")
         }
     
@@ -59,7 +59,7 @@ const registerUser = asyncHandler( async (req , res) => {
             throw new ApiError(400, "username is required")
         }
 
-        const existingUser = User.findOne(
+        const existingUser = await User.findOne(
             {
                 $or: [{username}, {email}]
             }
@@ -87,10 +87,10 @@ const registerUser = asyncHandler( async (req , res) => {
         const user = await User.create({
             email,
             password,
-            fullname,
-            avatar: avatar.url,
+            fullName,
+            avatar: avatar,
             username: username.toLowerCase(),
-            coverImage: coverImage?.url || "",
+            coverImage: coverImage || "",
         })
 
         const userCreated = await User.findById(user._id).select(

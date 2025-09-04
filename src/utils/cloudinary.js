@@ -18,13 +18,25 @@ What if we don't use this file:
 - Harder to maintain and update upload logic across the project.
 ==============================================
 */
-import { v2 } from "cloudinary";
-import fs from 'fs'
+// import { v2 } from "cloudinary";
+// import fs from 'fs'
 
-// Configure Cloudinary with credentials from .env
-v2.config({ 
+// // Configure Cloudinary with credentials from .env
+// v2.config({ 
+//   cloud_name: process.env.CLOUD_NAME,
+//   api_key: process.env.API_KEY, 
+//   api_secret: process.env.API_SECRET
+// });
+import dotenv from 'dotenv'
+dotenv.config({
+    path: './.env'
+})
+import { v2 } from "cloudinary";
+import fs from 'fs';
+
+v2.config({
   cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY, 
+  api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET
 });
 
@@ -47,6 +59,8 @@ const uploadFileCloudinary = async (localFilePath) => {
         
     }
 }
+
+console.log(process.env.CLOUD_NAME, process.env.API_KEY, process.env.API_SECRET);
 
 // Export the upload function for use in controllers/routes
 export {uploadFileCloudinary}
