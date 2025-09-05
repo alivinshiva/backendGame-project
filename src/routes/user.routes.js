@@ -19,8 +19,9 @@ What if we don't use this file:
 ==============================================
 */
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controllers.js";
+import { loginUser, logOutUser, registerUser } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const userRouter = Router()
 
@@ -37,5 +38,11 @@ userRouter.route("/register").post(
     ]),
     registerUser
 )
+
+userRouter.route("/login").post(loginUser)
+
+// secured rout for check loggedIn user 
+
+userRouter.route("/logout").post(verifyJWT, logOutUser)
 
 export default userRouter
