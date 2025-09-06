@@ -18,13 +18,27 @@ What if we don't use this file:
 - New endpoints would be harder to add and document.
 ==============================================
 */
+
+// Import Express Router to define modular route handlers
 import { Router } from "express";
-import { loginUser, logOutUser, registerUser } from "../controllers/user.controllers.js";
+
+// Import user-related controller functions
+import { loginUser, logOutUser, registerUser, getRefreshAccessToken } from "../controllers/user.controllers.js";
+
+// Import Multer middleware for handling file uploads (avatar, coverImage)
 import { upload } from "../middlewares/multer.middleware.js";
+
+// Import JWT verification middleware to protect secure routes
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
+
+// Create a new router instance for user-related routes
 const userRouter = Router()
 
+
+// User registration route
+// Uses Multer middleware to handle file uploads for 'avatar' and 'coverImage' fields
+// Passes control to registerUser controller after files are processed
 userRouter.route("/register").post(
     upload.fields([
         {
@@ -39,10 +53,21 @@ userRouter.route("/register").post(
     registerUser
 )
 
+
+// User login route
+// Accepts username/email and password, returns JWT tokens on success
 userRouter.route("/login").post(loginUser)
 
-// secured rout for check loggedIn user 
+
+// Logout route (secured)
+// Uses verifyJWT middleware to ensure only authenticated users can log out
+userRouter.route("/logout").post(verifyJWT, logOutUser)
 
 userRouter.route("/logout").post(verifyJWT, logOutUser)
 
+// Route to refresh access token using a valid refresh token
+userRouter.route("/refresh-token").post(getRefreshAccessToken)
+
+
+// Export the userRouter for use in the main app
 export default userRouter
