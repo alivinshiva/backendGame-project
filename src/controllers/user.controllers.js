@@ -216,7 +216,7 @@ const logOutUser = asyncHandler(async (req, res) => {
     User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: { refreshToken: undefined }
+            $unset: { refreshToken: 1 }
         },
         {
             new: true
@@ -304,12 +304,14 @@ const changePassword = asyncHandler(async (req, res) => {
         )
 })
 
-// getting current User
-
+// Controller to get the current authenticated user's info
 const currentUser = asyncHandler(async (req, res) => {
+    // Return the user object attached by the verifyJWT middleware
     return res
         .status(200)
-        .json(200, req.user, "Current user fetched")
+        .json(
+            new ApiResponse(200, req.user, "Current user fetched")
+        )
 })
 
 // updating account Details
@@ -428,11 +430,11 @@ const userChannelprofile = asyncHandler(async (req, res) => {
                     $size: "$subscribers"
                 },
                 channelSubscribedToCount: {
-                    $size: "subscribedTo"
-                }, 
-                isSubscribed :{
+                    $size: "$subscribedTo"
+                },
+                isSubscribed: {
                     $cond: {
-                        if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+                        if: { $in: [req.user?._id, "$subscribers.subscriber"] },
                         then: true,
                         else: false
                     }
@@ -449,32 +451,32 @@ const userChannelprofile = asyncHandler(async (req, res) => {
                 isSubscribed: 1,
                 subscriberCount: 1,
                 channelSubscribedToCount: 1
-                
+
             }
         }
     ])
 
-    if(!channel?.length) {
-        throw new ApiError(405, "channer not found")
+    if (!channel?.length) {
+        throw new ApiError(405, "channel not found")
     }
 
-    return res 
-    .status(200)
-    .json(
-        new ApiResponse(200, channel[0], "User channel fetched")
-    )
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, channel[0], "User channel fetched")
+        )
 })
 
 // watch hisrory
 
 // Controller to get the user's watch history with video and owner details
-const getWatchHistory = asyncHandler(async(req, res) => {
+const getWatchHistory = asyncHandler(async (req, res) => {
     // Aggregate pipeline to fetch the user and populate watchHistory with video and owner info
     const user = await User.aggregate([
         {
             // Match the user by their ObjectId (why: to get only the current user's data)
             $match: {
-                _id: new mongoose.Types.ObjectId(req.user_id)
+                _id: new mongoose.Types.ObjectId(req.user._id)
             }
         },
         {
@@ -518,10 +520,13 @@ const getWatchHistory = asyncHandler(async(req, res) => {
     ])
 
     // Always return user[0] because aggregate returns an array (why: only one user is matched)
-    return res 
+    if (!user[0]) {
+        throw new ApiError(404, "User not found or no watch history");
+    }
+    return res
         .status(200)
         .json(
-            new ApiResponse(200, user[0].watchHistory , "Watch history fetched successfully")
+            new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully")
         )
 })
 
