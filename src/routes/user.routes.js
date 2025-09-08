@@ -23,7 +23,7 @@ What if we don't use this file:
 import { Router } from "express";
 
 // Import user-related controller functions
-import { loginUser, logOutUser, registerUser, getRefreshAccessToken, changePassword } from "../controllers/user.controllers.js";
+import { loginUser, logOutUser, registerUser, getRefreshAccessToken, changePassword, currentUser, updateAccountDetails, updateAvatar, updateCoverImage, userChannelprofile, getWatchHistory } from "../controllers/user.controllers.js";
 
 // Import Multer middleware for handling file uploads (avatar, coverImage)
 import { upload } from "../middlewares/multer.middleware.js";
@@ -69,6 +69,20 @@ userRouter.route("/logout").post(verifyJWT, logOutUser)
 userRouter.route("/refresh-token").post(getRefreshAccessToken)
 
 userRouter.route("/change-password").post(verifyJWT, changePassword)
+
+userRouter.route("/current-user").get(verifyJWT, currentUser)
+
+userRouter.route("/update-details").patch(verifyJWT, updateAccountDetails)
+
+userRouter.route("/update-avatar").patch(verifyJWT, upload.single("avatar"), updateAvatar)
+
+userRouter.route("/update-cover").patch(verifyJWT, upload.single("coverImage"),updateCoverImage)
+
+userRouter.route("/c/:username").get(verifyJWT, userChannelprofile)
+
+userRouter.route("/watch-history").get(verifyJWT, getWatchHistory)
+
+
 
 
 // Export the userRouter for use in the main app

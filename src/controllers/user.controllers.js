@@ -534,6 +534,7 @@ export {
     changePassword,
     currentUser,
     updateAvatar,
+    userChannelprofile,
     updateAccountDetails,
     updateCoverImage,
     getWatchHistory
