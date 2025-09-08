@@ -23,7 +23,7 @@ What if we don't use this file:
 import { Router } from "express";
 
 // Import user-related controller functions
-import { loginUser, logOutUser, registerUser, getRefreshAccessToken } from "../controllers/user.controllers.js";
+import { loginUser, logOutUser, registerUser, getRefreshAccessToken, changePassword } from "../controllers/user.controllers.js";
 
 // Import Multer middleware for handling file uploads (avatar, coverImage)
 import { upload } from "../middlewares/multer.middleware.js";
@@ -63,10 +63,12 @@ userRouter.route("/login").post(loginUser)
 // Uses verifyJWT middleware to ensure only authenticated users can log out
 userRouter.route("/logout").post(verifyJWT, logOutUser)
 
-userRouter.route("/logout").post(verifyJWT, logOutUser)
+// userRouter.route("/logout").post(verifyJWT, logOutUser)
 
 // Route to refresh access token using a valid refresh token
 userRouter.route("/refresh-token").post(getRefreshAccessToken)
+
+userRouter.route("/change-password").post(verifyJWT, changePassword)
 
 
 // Export the userRouter for use in the main app
